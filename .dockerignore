@@ -1,0 +1,15 @@
+# Ignora tudo por padrão
+*
+
+# Libera arquivos essenciais para build Maven
+!mvnw
+!mvnw.cmd
+!pom.xml
+!.mvn/
+!src/
+
+# Libera artefatos já compilados (caso existam)
+!target/*-runner
+!target/*-runner.jar
+!target/lib/*
+!target/quarkus-app/*

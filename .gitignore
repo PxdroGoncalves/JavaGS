@@ -1,0 +1,79 @@
+
+# MAVEN (build e backups)
+
+
+target/                     # Pasta de build (arquivos compilados)
+pom.xml.tag                # Arquivo temporário gerado em releases
+pom.xml.releaseBackup      # Backup do pom em processos de release
+pom.xml.versionsBackup     # Backup de versões do pom
+release.properties         # Configurações de release
+.flattened-pom.xml         # Pom "flattened" gerado por plugin
+
+
+# ECLIPSE (arquivos da IDE)
+
+
+.project                   # Configuração do projeto no Eclipse
+.classpath                 # Dependências do projeto no Eclipse
+.settings/                 # Configurações da IDE
+bin/                       # Arquivos compilados pelo Eclipse
+
+
+# INTELLIJ IDEA
+
+
+.idea                      # Configurações da IDE
+*.ipr                      # Arquivo de projeto antigo
+*.iml                      # Módulos do projeto
+*.iws                      # Workspace do IntelliJ
+
+
+# NETBEANS
+
+
+nb-configuration.xml       # Configuração da IDE NetBeans
+
+
+# VISUAL STUDIO CODE
+
+
+.vscode                    # Configurações locais do VS Code
+.factorypath              # Configuração de annotation processors
+
+
+# SISTEMA OPERACIONAL
+
+
+.DS_Store                  # Arquivo oculto do macOS
+
+
+# VIM (editor)
+
+
+*.swp                      # Arquivo temporário
+*.swo                      # Arquivo temporário
+
+
+# PATCH / MERGE
+
+
+*.orig                     # Arquivo original após conflito
+*.rej                      # Arquivo rejeitado em patch
+
+
+# AMBIENTE LOCAL
+
+
+.env                       # Variáveis de ambiente (sensíveis)
+
+
+# QUARKUS
+
+
+/.quarkus/cli/plugins/     # Plugins do CLI do Quarkus
+
+
+# CERTIFICADOS
+
+
+.certs/                    # Certificados TLS locais
