@@ -23,10 +23,16 @@ public class OcorrenciaDAO {
 
     public void cadastrar(Ocorrencia o) throws ExcecoesConexao {
         try {
-            String sql = "INSERT INTO OCORRENCIA (data_inicio, data_fim, descricao, status, id_regiao, id_tipo) VALUES (TO_DATE(?,'YYYY-MM-DD'), TO_DATE(?,'YYYY-MM-DD'), ?, ?, ?, ?)";
+            String sql = "INSERT INTO OCORRENCIA (data_inicio, data_fim, descricao, status, id_regiao, id_tipo) " +
+                         "VALUES (TO_DATE(?,'YYYY-MM-DD'), TO_DATE(?,'YYYY-MM-DD'), ?, ?, ?, ?)";
             PreparedStatement ps = minhaConexao.prepareStatement(sql, new String[]{"id_ocorrencia"});
             ps.setString(1, o.getDataInicio());
-            ps.setString(2, o.getDataFim());
+            // FIX: data_fim pode ser null — usar setNull em vez de passar string "null"
+            if (o.getDataFim() != null && !o.getDataFim().isBlank()) {
+                ps.setString(2, o.getDataFim());
+            } else {
+                ps.setNull(2, Types.VARCHAR);
+            }
             ps.setString(3, o.getDescricao());
             ps.setString(4, o.getStatus() != null ? o.getStatus() : "ATIVO");
             ps.setInt(5, o.getIdRegiao());
@@ -43,12 +49,17 @@ public class OcorrenciaDAO {
     public List<Ocorrencia> listar() throws ExcecoesConexao {
         try {
             List<Ocorrencia> lista = new ArrayList<>();
-            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo ORDER BY o.data_inicio DESC";
+            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                         "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, " +
+                         "o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                         "td.nome AS nome_tipo, td.nivel_risco " +
+                         "FROM OCORRENCIA o " +
+                         "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                         "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                         "ORDER BY o.data_inicio DESC";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                lista.add(mapear(rs));
-            }
+            while (rs.next()) lista.add(mapear(rs));
             ps.close();
             return lista;
         } catch (SQLException e) {
@@ -58,7 +69,14 @@ public class OcorrenciaDAO {
 
     public Ocorrencia buscarPorId(int id) throws ExcecoesConexao {
         try {
-            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_ocorrencia = ?";
+            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                         "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, " +
+                         "o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                         "td.nome AS nome_tipo, td.nivel_risco " +
+                         "FROM OCORRENCIA o " +
+                         "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                         "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                         "WHERE o.id_ocorrencia = ?";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -77,7 +95,14 @@ public class OcorrenciaDAO {
     public List<Ocorrencia> listarPorStatus(String status) throws ExcecoesConexao {
         try {
             List<Ocorrencia> lista = new ArrayList<>();
-            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.status = ? ORDER BY o.data_inicio DESC";
+            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                         "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, " +
+                         "o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                         "td.nome AS nome_tipo, td.nivel_risco " +
+                         "FROM OCORRENCIA o " +
+                         "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                         "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                         "WHERE o.status = ? ORDER BY o.data_inicio DESC";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ps.setString(1, status.toUpperCase());
             ResultSet rs = ps.executeQuery();
@@ -92,7 +117,14 @@ public class OcorrenciaDAO {
     public List<Ocorrencia> listarPorRegiao(int idRegiao) throws ExcecoesConexao {
         try {
             List<Ocorrencia> lista = new ArrayList<>();
-            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_regiao = ? ORDER BY o.data_inicio DESC";
+            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                         "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, " +
+                         "o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                         "td.nome AS nome_tipo, td.nivel_risco " +
+                         "FROM OCORRENCIA o " +
+                         "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                         "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                         "WHERE o.id_regiao = ? ORDER BY o.data_inicio DESC";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ps.setInt(1, idRegiao);
             ResultSet rs = ps.executeQuery();
@@ -107,7 +139,15 @@ public class OcorrenciaDAO {
     public List<Ocorrencia> listarPorSatelite(int idSatelite) throws ExcecoesConexao {
         try {
             List<Ocorrencia> lista = new ArrayList<>();
-            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo INNER JOIN OCORRENCIA_SATELITE os ON os.id_ocorrencia = o.id_ocorrencia WHERE os.id_satelite = ? ORDER BY o.data_inicio DESC";
+            String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                         "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, " +
+                         "o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                         "td.nome AS nome_tipo, td.nivel_risco " +
+                         "FROM OCORRENCIA o " +
+                         "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                         "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                         "INNER JOIN OCORRENCIA_SATELITE os ON os.id_ocorrencia = o.id_ocorrencia " +
+                         "WHERE os.id_satelite = ? ORDER BY o.data_inicio DESC";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ps.setInt(1, idSatelite);
             ResultSet rs = ps.executeQuery();
@@ -121,10 +161,17 @@ public class OcorrenciaDAO {
 
     public void atualizar(Ocorrencia o) throws ExcecoesConexao {
         try {
-            String sql = "UPDATE OCORRENCIA SET data_inicio = TO_DATE(?,'YYYY-MM-DD'), data_fim = TO_DATE(?,'YYYY-MM-DD'), descricao = ?, status = ?, id_regiao = ?, id_tipo = ? WHERE id_ocorrencia = ?";
+            String sql = "UPDATE OCORRENCIA SET data_inicio = TO_DATE(?,'YYYY-MM-DD'), " +
+                         "data_fim = TO_DATE(?,'YYYY-MM-DD'), descricao = ?, status = ?, " +
+                         "id_regiao = ?, id_tipo = ? WHERE id_ocorrencia = ?";
             PreparedStatement ps = minhaConexao.prepareStatement(sql);
             ps.setString(1, o.getDataInicio());
-            ps.setString(2, o.getDataFim());
+            // FIX: data_fim null — usar setNull
+            if (o.getDataFim() != null && !o.getDataFim().isBlank()) {
+                ps.setString(2, o.getDataFim());
+            } else {
+                ps.setNull(2, Types.VARCHAR);
+            }
             ps.setString(3, o.getDescricao());
             ps.setString(4, o.getStatus());
             ps.setInt(5, o.getIdRegiao());

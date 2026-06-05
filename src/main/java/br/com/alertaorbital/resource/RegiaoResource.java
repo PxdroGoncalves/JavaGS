@@ -6,22 +6,23 @@ import br.com.alertaorbital.excecoes.ExcecoesConexao;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.List;
 
 @Path("/regioes")
 public class RegiaoResource {
 
+    private String erroJson(ExcecoesConexao e) {
+        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        return "{\"erro\":\"" + msg + "\"}";
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listar() {
         try {
-            RegiaoBO bo = new RegiaoBO();
-            List<Regiao> lista = bo.listar();
-            return Response.ok(lista).build();
+            return Response.ok(new RegiaoBO().listar()).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -30,15 +31,13 @@ public class RegiaoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") int id) {
         try {
-            RegiaoBO bo = new RegiaoBO();
-            Regiao r = bo.buscarPorId(id);
+            Regiao r = new RegiaoBO().buscarPorId(id);
             if (r == null)
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"erro\":\"Regiao nao encontrada para o id: " + id + "\"}").build();
             return Response.ok(r).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -47,12 +46,9 @@ public class RegiaoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrar(Regiao regiao) {
         try {
-            RegiaoBO bo = new RegiaoBO();
-            Regiao criada = bo.cadastrar(regiao);
-            return Response.status(Response.Status.CREATED).entity(criada).build();
+            return Response.status(Response.Status.CREATED).entity(new RegiaoBO().cadastrar(regiao)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -63,12 +59,9 @@ public class RegiaoResource {
     public Response atualizar(@PathParam("id") int id, Regiao regiao) {
         try {
             regiao.setIdRegiao(id);
-            RegiaoBO bo = new RegiaoBO();
-            Regiao atualizada = bo.atualizar(regiao);
-            return Response.ok(atualizada).build();
+            return Response.ok(new RegiaoBO().atualizar(regiao)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -77,12 +70,10 @@ public class RegiaoResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deletar(@PathParam("id") int id) {
         try {
-            RegiaoBO bo = new RegiaoBO();
-            bo.deletar(id);
+            new RegiaoBO().deletar(id);
             return Response.noContent().build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 }

@@ -6,22 +6,23 @@ import br.com.alertaorbital.excecoes.ExcecoesConexao;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.List;
 
 @Path("/satelites")
 public class SateliteResource {
 
+    private String erroJson(ExcecoesConexao e) {
+        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        return "{\"erro\":\"" + msg + "\"}";
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listar() {
         try {
-            SateliteBO bo = new SateliteBO();
-            List<Satelite> lista = bo.listar();
-            return Response.ok(lista).build();
+            return Response.ok(new SateliteBO().listar()).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -30,12 +31,9 @@ public class SateliteResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listarOperacionais() {
         try {
-            SateliteBO bo = new SateliteBO();
-            List<Satelite> lista = bo.listarOperacionais();
-            return Response.ok(lista).build();
+            return Response.ok(new SateliteBO().listarOperacionais()).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -44,15 +42,13 @@ public class SateliteResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") int id) {
         try {
-            SateliteBO bo = new SateliteBO();
-            Satelite s = bo.buscarPorId(id);
+            Satelite s = new SateliteBO().buscarPorId(id);
             if (s == null)
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("{\"erro\":\"Satelite nao encontrado para o id: " + id + "\"}").build();
             return Response.ok(s).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -61,12 +57,9 @@ public class SateliteResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrar(Satelite satelite) {
         try {
-            SateliteBO bo = new SateliteBO();
-            Satelite criado = bo.cadastrar(satelite);
-            return Response.status(Response.Status.CREATED).entity(criado).build();
+            return Response.status(Response.Status.CREATED).entity(new SateliteBO().cadastrar(satelite)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -77,12 +70,9 @@ public class SateliteResource {
     public Response atualizar(@PathParam("id") int id, Satelite satelite) {
         try {
             satelite.setIdSatelite(id);
-            SateliteBO bo = new SateliteBO();
-            Satelite atualizado = bo.atualizar(satelite);
-            return Response.ok(atualizado).build();
+            return Response.ok(new SateliteBO().atualizar(satelite)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -91,12 +81,10 @@ public class SateliteResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deletar(@PathParam("id") int id) {
         try {
-            SateliteBO bo = new SateliteBO();
-            bo.deletar(id);
+            new SateliteBO().deletar(id);
             return Response.noContent().build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 }

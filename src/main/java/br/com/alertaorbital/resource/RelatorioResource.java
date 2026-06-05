@@ -25,64 +25,66 @@ public class RelatorioResource {
 
     private static final String NASA_EONET_URL = "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=20";
 
-    // GET /api/relatorio — relatório JSON completo das ocorrências
+    private String erroJson(Exception e) {
+        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        return "{\"erro\":\"" + msg + "\"}";
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response gerarRelatorio() {
         try {
-            OcorrenciaDAO ocorrenciaDAO = new OcorrenciaDAO();
-            AlertaDAO alertaDAO = new AlertaDAO();
-            OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
+            OcorrenciaDAO ocorrenciaDAO   = new OcorrenciaDAO();
+            AlertaDAO alertaDAO           = new AlertaDAO();
+            OcorrenciaSateliteDAO osDAO   = new OcorrenciaSateliteDAO();
 
-            List<Ocorrencia> todas = ocorrenciaDAO.listar();
-            List<Alerta> alertas = alertaDAO.listar();
+            List<Ocorrencia> todas   = ocorrenciaDAO.listar();
+            List<Alerta> alertas     = alertaDAO.listar();
 
-            long totalAtivo = todas.stream().filter(o -> "ATIVO".equals(o.getStatus())).count();
+            long totalAtivo      = todas.stream().filter(o -> "ATIVO".equals(o.getStatus())).count();
             long totalControlado = todas.stream().filter(o -> "CONTROLADO".equals(o.getStatus())).count();
-            long totalResolvido = todas.stream().filter(o -> "RESOLVIDO".equals(o.getStatus())).count();
+            long totalResolvido  = todas.stream().filter(o -> "RESOLVIDO".equals(o.getStatus())).count();
 
             List<Map<String, Object>> detalhes = new ArrayList<>();
             for (Ocorrencia o : todas) {
                 List<Satelite> satelites = osDAO.listarSatelitesPorOcorrencia(o.getIdOcorrencia());
-                List<String> nomeSatelites = new ArrayList<>();
-                for (Satelite s : satelites) nomeSatelites.add(s.getNome() + " (" + s.getAgencia() + ")");
+                List<String> nomes = new ArrayList<>();
+                for (Satelite s : satelites)
+                    nomes.add(s.getNome() + " (" + s.getAgencia() + ")");
 
-                long totalAlertasOc = alertas.stream()
-                        .filter(a -> a.getIdOcorrencia() == o.getIdOcorrencia()).count();
+                long totalAl = alertas.stream().filter(a -> a.getIdOcorrencia() == o.getIdOcorrencia()).count();
 
                 Map<String, Object> item = new LinkedHashMap<>();
-                item.put("id_ocorrencia", o.getIdOcorrencia());
-                item.put("descricao", o.getDescricao());
-                item.put("status", o.getStatus());
-                item.put("data_inicio", o.getDataInicio());
-                item.put("data_fim", o.getDataFim());
-                item.put("regiao", o.getNomeRegiao());
-                item.put("estado", o.getEstadoRegiao());
-                item.put("tipo_desastre", o.getNomeTipo());
-                item.put("nivel_risco", o.getNivelRisco());
-                item.put("satelites_detectores", nomeSatelites);
-                item.put("total_alertas", totalAlertasOc);
+                item.put("id_ocorrencia",       o.getIdOcorrencia());
+                item.put("descricao",            o.getDescricao());
+                item.put("status",               o.getStatus());
+                item.put("data_inicio",          o.getDataInicio());
+                item.put("data_fim",             o.getDataFim());
+                item.put("regiao",               o.getNomeRegiao());
+                item.put("estado",               o.getEstadoRegiao());
+                item.put("tipo_desastre",        o.getNomeTipo());
+                item.put("nivel_risco",          o.getNivelRisco());
+                item.put("satelites_detectores", nomes);
+                item.put("total_alertas",        totalAl);
                 detalhes.add(item);
             }
 
-            Map<String, Object> relatorio = new LinkedHashMap<>();
-            relatorio.put("gerado_em", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
-            relatorio.put("total_ocorrencias", todas.size());
-            relatorio.put("total_ativo", totalAtivo);
-            relatorio.put("total_controlado", totalControlado);
-            relatorio.put("total_resolvido", totalResolvido);
-            relatorio.put("total_alertas", alertas.size());
-            relatorio.put("ocorrencias", detalhes);
+            Map<String, Object> rel = new LinkedHashMap<>();
+            rel.put("gerado_em",         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
+            rel.put("total_ocorrencias", todas.size());
+            rel.put("total_ativo",       totalAtivo);
+            rel.put("total_controlado",  totalControlado);
+            rel.put("total_resolvido",   totalResolvido);
+            rel.put("total_alertas",     alertas.size());
+            rel.put("ocorrencias",       detalhes);
 
-            return Response.ok(relatorio).build();
+            return Response.ok(rel).build();
 
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
-    // GET /api/relatorio/nasa-eonet — consome API NASA EONET em tempo real
     @GET
     @Path("/nasa-eonet")
     @Produces(MediaType.APPLICATION_JSON)
@@ -107,8 +109,7 @@ public class RelatorioResource {
             return Response.ok(sb.toString()).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"Falha ao consultar NASA EONET: " + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 }

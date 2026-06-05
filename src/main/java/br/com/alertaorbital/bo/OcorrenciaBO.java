@@ -18,13 +18,13 @@ public class OcorrenciaBO {
 
     public Ocorrencia cadastrar(Ocorrencia o) throws ExcecoesConexao {
         if (o.getDataInicio() == null || o.getDataInicio().isBlank())
-            throw new ExcecoesConexao("data_inicio é obrigatoria");
+            throw new ExcecoesConexao("data_inicio e obrigatoria");
         if (o.getDescricao() == null || o.getDescricao().isBlank())
-            throw new ExcecoesConexao("descricao é obrigatoria");
+            throw new ExcecoesConexao("descricao e obrigatoria");
         if (o.getIdRegiao() <= 0)
-            throw new ExcecoesConexao("id_regiao é obrigatorio");
+            throw new ExcecoesConexao("id_regiao e obrigatorio");
         if (o.getIdTipo() <= 0)
-            throw new ExcecoesConexao("id_tipo é obrigatorio");
+            throw new ExcecoesConexao("id_tipo e obrigatorio");
         if (o.getStatus() == null || o.getStatus().isBlank())
             o.setStatus("ATIVO");
         if (!STATUS_VALIDOS.contains(o.getStatus().toUpperCase()))
@@ -65,10 +65,15 @@ public class OcorrenciaBO {
 
     public Ocorrencia atualizar(Ocorrencia o) throws ExcecoesConexao {
         if (o.getDataInicio() == null || o.getDataInicio().isBlank())
-            throw new ExcecoesConexao("data_inicio é obrigatoria");
+            throw new ExcecoesConexao("data_inicio e obrigatoria");
         if (o.getDescricao() == null || o.getDescricao().isBlank())
-            throw new ExcecoesConexao("descricao é obrigatoria");
-        if (!STATUS_VALIDOS.contains(o.getStatus().toUpperCase()))
+            throw new ExcecoesConexao("descricao e obrigatoria");
+        // FIX: validacoes de idRegiao e idTipo que estavam faltando no atualizar
+        if (o.getIdRegiao() <= 0)
+            throw new ExcecoesConexao("id_regiao e obrigatorio");
+        if (o.getIdTipo() <= 0)
+            throw new ExcecoesConexao("id_tipo e obrigatorio");
+        if (o.getStatus() == null || !STATUS_VALIDOS.contains(o.getStatus().toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
 
         o.setStatus(o.getStatus().toUpperCase());
@@ -77,7 +82,7 @@ public class OcorrenciaBO {
         return dao.buscarPorId(o.getIdOcorrencia());
     }
 
-    // Regra de negócio: progressão ATIVO -> CONTROLADO -> RESOLVIDO sem retrocesso
+    // Regra de negocio: progressao ATIVO -> CONTROLADO -> RESOLVIDO sem retrocesso
     public Ocorrencia atualizarStatus(int id, String novoStatus) throws ExcecoesConexao {
         if (!STATUS_VALIDOS.contains(novoStatus.toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
@@ -88,7 +93,7 @@ public class OcorrenciaBO {
             throw new ExcecoesConexao("Ocorrencia nao encontrada para o id: " + id);
 
         String statusAtual = atual.getStatus();
-        String statusNovo = novoStatus.toUpperCase();
+        String statusNovo  = novoStatus.toUpperCase();
 
         if (statusAtual.equals("RESOLVIDO"))
             throw new ExcecoesConexao("Ocorrencia ja esta RESOLVIDA e nao pode ser alterada");
@@ -104,7 +109,6 @@ public class OcorrenciaBO {
         dao.deletar(id);
     }
 
-    // Vincular satelite a ocorrencia
     public OcorrenciaSatelite vincularSatelite(int idOcorrencia, int idSatelite, String dataDeteccao) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         if (osDAO.vinculoExiste(idOcorrencia, idSatelite))
@@ -117,7 +121,6 @@ public class OcorrenciaBO {
         return os;
     }
 
-    // Desvincular satelite de ocorrencia
     public void desvincularSatelite(int idOcorrencia, int idSatelite) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         if (!osDAO.vinculoExiste(idOcorrencia, idSatelite))
@@ -125,7 +128,6 @@ public class OcorrenciaBO {
         osDAO.desvincular(idOcorrencia, idSatelite);
     }
 
-    // Listar satelites vinculados a uma ocorrencia
     public List<Satelite> listarSatelites(int idOcorrencia) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         return osDAO.listarSatelitesPorOcorrencia(idOcorrencia);

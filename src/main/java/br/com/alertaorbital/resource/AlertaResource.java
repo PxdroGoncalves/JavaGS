@@ -6,22 +6,24 @@ import br.com.alertaorbital.excecoes.ExcecoesConexao;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.List;
 
 @Path("/alertas")
 public class AlertaResource {
+
+    private String erroJson(ExcecoesConexao e) {
+        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        return "{\"erro\":\"" + msg + "\"}";
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listar() {
         try {
             AlertaBO bo = new AlertaBO();
-            List<Alerta> lista = bo.listar();
-            return Response.ok(lista).build();
+            return Response.ok(bo.listar()).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -37,8 +39,7 @@ public class AlertaResource {
                         .entity("{\"erro\":\"Alerta nao encontrado para o id: " + id + "\"}").build();
             return Response.ok(a).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -48,11 +49,9 @@ public class AlertaResource {
     public Response listarPorUsuario(@PathParam("idUsuario") int idUsuario) {
         try {
             AlertaBO bo = new AlertaBO();
-            List<Alerta> lista = bo.listarPorUsuario(idUsuario);
-            return Response.ok(lista).build();
+            return Response.ok(bo.listarPorUsuario(idUsuario)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -62,11 +61,9 @@ public class AlertaResource {
     public Response listarPorOcorrencia(@PathParam("idOcorrencia") int idOcorrencia) {
         try {
             AlertaBO bo = new AlertaBO();
-            List<Alerta> lista = bo.listarPorOcorrencia(idOcorrencia);
-            return Response.ok(lista).build();
+            return Response.ok(bo.listarPorOcorrencia(idOcorrencia)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 
@@ -76,11 +73,9 @@ public class AlertaResource {
     public Response cadastrar(Alerta alerta) {
         try {
             AlertaBO bo = new AlertaBO();
-            Alerta criado = bo.cadastrar(alerta);
-            return Response.status(Response.Status.CREATED).entity(criado).build();
+            return Response.status(Response.Status.CREATED).entity(bo.cadastrar(alerta)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -92,11 +87,9 @@ public class AlertaResource {
         try {
             alerta.setIdAlerta(id);
             AlertaBO bo = new AlertaBO();
-            Alerta atualizado = bo.atualizar(alerta);
-            return Response.ok(atualizado).build();
+            return Response.ok(bo.atualizar(alerta)).build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(erroJson(e)).build();
         }
     }
 
@@ -105,12 +98,10 @@ public class AlertaResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deletar(@PathParam("id") int id) {
         try {
-            AlertaBO bo = new AlertaBO();
-            bo.deletar(id);
+            new AlertaBO().deletar(id);
             return Response.noContent().build();
         } catch (ExcecoesConexao e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"erro\":\"" + e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
 }
