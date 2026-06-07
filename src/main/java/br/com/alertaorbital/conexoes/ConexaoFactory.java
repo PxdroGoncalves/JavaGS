@@ -8,17 +8,23 @@ import java.sql.SQLException;
 
 public class ConexaoFactory {
 
-    private static final String URL    = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl";
-    private static final String USUARIO = "rm567265";
-    private static final String SENHA   = "290406";
-
-    // Retorna uma conexão nova a cada chamada.
-    // USE sempre dentro de try-with-resources nos DAOs:
-    //   try (Connection con = ConexaoFactory.getConnection()) { ... }
     public static Connection getConnection() throws ExcecoesConexao {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            return DriverManager.getConnection(URL, USUARIO, SENHA);
+
+            String url      = System.getenv("DB_URL");
+            String usuario  = System.getenv("DB_USER");
+            String senha    = System.getenv("DB_PASSWORD");
+
+            // Fallback local (sem variável de ambiente configurada)
+            if (url == null || usuario == null || senha == null) {
+                url      = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
+                usuario  = "rm567265";
+                senha    = "290406";
+            }
+
+            return DriverManager.getConnection(url, usuario, senha);
+
         } catch (ClassNotFoundException | SQLException e) {
             throw new ExcecoesConexao(e);
         }

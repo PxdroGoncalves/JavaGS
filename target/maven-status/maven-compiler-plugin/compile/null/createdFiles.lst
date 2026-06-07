@@ -14,13 +14,13 @@ br\com\alertaorbital\conexoes\ConexaoFactory.class
 br\com\alertaorbital\dao\OcorrenciaSateliteDAO.class
 br\com\alertaorbital\dao\TipoDesastreDAO.class
 br\com\alertaorbital\dao\OcorrenciaDAO.class
-br\com\fiap\CorsFilter.class
 br\com\alertaorbital\bo\AlertaBO.class
 br\com\alertaorbital\bo\UsuarioBO.class
 br\com\alertaorbital\entities\Usuario.class
 br\com\alertaorbital\resource\IndexResource.class
 br\com\alertaorbital\resource\AlertaResource.class
 br\com\alertaorbital\entities\OcorrenciaSatelite.class
+br\com\alertaorbital\resource\CorsFilter.class
 br\com\alertaorbital\bo\TipoDesastreBO.class
 br\com\alertaorbital\resource\OcorrenciaResource.class
 br\com\alertaorbital\entities\TipoDesastre.class
