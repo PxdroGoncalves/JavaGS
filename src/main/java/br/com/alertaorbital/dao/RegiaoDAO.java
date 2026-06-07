@@ -10,100 +10,76 @@ import java.util.List;
 
 public class RegiaoDAO {
 
-    public Connection minhaConexao;
-
-    public RegiaoDAO() throws ExcecoesConexao {
-        try {
-            ConexaoFactory factory = new ConexaoFactory();
-            this.minhaConexao = factory.conexao();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new ExcecoesConexao(e);
-        }
-    }
-
     public void cadastrar(Regiao regiao) throws ExcecoesConexao {
-        try {
-            String sql = "INSERT INTO REGIAO (nome, estado, pais) VALUES (?, ?, ?)";
-            PreparedStatement ps = minhaConexao.prepareStatement(sql, new String[]{"id_regiao"});
+        String sql = "INSERT INTO REGIAO (nome, estado, pais) VALUES (?, ?, ?)";
+        try (Connection con = ConexaoFactory.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_regiao"})) {
             ps.setString(1, regiao.getNome());
             ps.setString(2, regiao.getEstado());
             ps.setString(3, regiao.getPais() != null ? regiao.getPais() : "Brasil");
             ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) regiao.setIdRegiao(rs.getInt(1));
-            ps.close();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) regiao.setIdRegiao(rs.getInt(1));
+            }
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
     }
 
     public List<Regiao> listar() throws ExcecoesConexao {
-        try {
-            List<Regiao> lista = new ArrayList<>();
-            String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO ORDER BY estado, nome";
-            PreparedStatement ps = minhaConexao.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+        String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO ORDER BY estado, nome";
+        List<Regiao> lista = new ArrayList<>();
+        try (Connection con = ConexaoFactory.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Regiao r = new Regiao(
+                lista.add(new Regiao(
                         rs.getInt("id_regiao"),
                         rs.getString("nome"),
                         rs.getString("estado"),
                         rs.getString("pais")
-                );
-                lista.add(r);
+                ));
             }
-            ps.close();
-            return lista;
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
+        return lista;
     }
 
     public Regiao buscarPorId(int id) throws ExcecoesConexao {
-        try {
-            String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO WHERE id_regiao = ?";
-            PreparedStatement ps = minhaConexao.prepareStatement(sql);
+        String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO WHERE id_regiao = ?";
+        try (Connection con = ConexaoFactory.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                Regiao r = new Regiao(
-                        rs.getInt("id_regiao"),
-                        rs.getString("nome"),
-                        rs.getString("estado"),
-                        rs.getString("pais")
-                );
-                ps.close();
-                return r;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return new Regiao(rs.getInt("id_regiao"), rs.getString("nome"), rs.getString("estado"), rs.getString("pais"));
             }
-            ps.close();
-            return null;
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
+        return null;
     }
 
     public void atualizar(Regiao regiao) throws ExcecoesConexao {
-        try {
-            String sql = "UPDATE REGIAO SET nome = ?, estado = ?, pais = ? WHERE id_regiao = ?";
-            PreparedStatement ps = minhaConexao.prepareStatement(sql);
+        String sql = "UPDATE REGIAO SET nome = ?, estado = ?, pais = ? WHERE id_regiao = ?";
+        try (Connection con = ConexaoFactory.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, regiao.getNome());
             ps.setString(2, regiao.getEstado());
             ps.setString(3, regiao.getPais());
             ps.setInt(4, regiao.getIdRegiao());
             ps.executeUpdate();
-            ps.close();
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
     }
 
     public void deletar(int id) throws ExcecoesConexao {
-        try {
-            String sql = "DELETE FROM REGIAO WHERE id_regiao = ?";
-            PreparedStatement ps = minhaConexao.prepareStatement(sql);
+        String sql = "DELETE FROM REGIAO WHERE id_regiao = ?";
+        try (Connection con = ConexaoFactory.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-            ps.close();
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
