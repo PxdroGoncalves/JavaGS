@@ -1,11 +1,6 @@
 package br.com.alertaorbital.resource;
 
-import br.com.alertaorbital.dao.AlertaDAO;
-import br.com.alertaorbital.dao.OcorrenciaDAO;
-import br.com.alertaorbital.dao.OcorrenciaSateliteDAO;
-import br.com.alertaorbital.entities.Alerta;
-import br.com.alertaorbital.entities.Ocorrencia;
-import br.com.alertaorbital.entities.Satelite;
+import br.com.alertaorbital.conexoes.ConexaoFactory;
 import br.com.alertaorbital.excecoes.ExcecoesConexao;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -17,13 +12,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Path("/relatorio")
 public class RelatorioResource {
 
-    private static final String NASA_EONET_URL = "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=20";
+    private static final String NASA_EONET_URL =
+            "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=20";
 
     private String erroJson(Exception e) {
         String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
@@ -33,54 +32,100 @@ public class RelatorioResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response gerarRelatorio() {
-        try {
-            OcorrenciaDAO ocorrenciaDAO   = new OcorrenciaDAO();
-            AlertaDAO alertaDAO           = new AlertaDAO();
-            OcorrenciaSateliteDAO osDAO   = new OcorrenciaSateliteDAO();
+        // Uma única conexão para todo o relatório — fecha no finally
+        try (Connection con = ConexaoFactory.getConnection()) {
 
-            List<Ocorrencia> todas   = ocorrenciaDAO.listar();
-            List<Alerta> alertas     = alertaDAO.listar();
+            // 1. Busca todas as ocorrências com JOIN em uma query
+            String sqlOcorrencias =
+                "SELECT o.id_ocorrencia, o.descricao, o.status, " +
+                "TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
+                "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, " +
+                "r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                "td.nome AS nome_tipo, td.nivel_risco " +
+                "FROM OCORRENCIA o " +
+                "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
+                "INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo " +
+                "ORDER BY o.data_inicio DESC";
 
-            long totalAtivo      = todas.stream().filter(o -> "ATIVO".equals(o.getStatus())).count();
-            long totalControlado = todas.stream().filter(o -> "CONTROLADO".equals(o.getStatus())).count();
-            long totalResolvido  = todas.stream().filter(o -> "RESOLVIDO".equals(o.getStatus())).count();
+            List<Map<String, Object>> ocorrencias = new ArrayList<>();
+            Map<Integer, Map<String, Object>> ocorrenciaMap = new LinkedHashMap<>();
 
-            List<Map<String, Object>> detalhes = new ArrayList<>();
-            for (Ocorrencia o : todas) {
-                List<Satelite> satelites = osDAO.listarSatelitesPorOcorrencia(o.getIdOcorrencia());
-                List<String> nomes = new ArrayList<>();
-                for (Satelite s : satelites)
-                    nomes.add(s.getNome() + " (" + s.getAgencia() + ")");
-
-                long totalAl = alertas.stream().filter(a -> a.getIdOcorrencia() == o.getIdOcorrencia()).count();
-
-                Map<String, Object> item = new LinkedHashMap<>();
-                item.put("id_ocorrencia",       o.getIdOcorrencia());
-                item.put("descricao",            o.getDescricao());
-                item.put("status",               o.getStatus());
-                item.put("data_inicio",          o.getDataInicio());
-                item.put("data_fim",             o.getDataFim());
-                item.put("regiao",               o.getNomeRegiao());
-                item.put("estado",               o.getEstadoRegiao());
-                item.put("tipo_desastre",        o.getNomeTipo());
-                item.put("nivel_risco",          o.getNivelRisco());
-                item.put("satelites_detectores", nomes);
-                item.put("total_alertas",        totalAl);
-                detalhes.add(item);
+            try (PreparedStatement ps = con.prepareStatement(sqlOcorrencias);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_ocorrencia");
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id_ocorrencia",       id);
+                    item.put("descricao",            rs.getString("descricao"));
+                    item.put("status",               rs.getString("status"));
+                    item.put("data_inicio",          rs.getString("data_inicio"));
+                    item.put("data_fim",             rs.getString("data_fim"));
+                    item.put("regiao",               rs.getString("nome_regiao"));
+                    item.put("estado",               rs.getString("estado_regiao"));
+                    item.put("tipo_desastre",        rs.getString("nome_tipo"));
+                    item.put("nivel_risco",          rs.getString("nivel_risco"));
+                    item.put("satelites_detectores", new ArrayList<String>());
+                    item.put("total_alertas",        0L);
+                    ocorrencias.add(item);
+                    ocorrenciaMap.put(id, item);
+                }
             }
+
+            // 2. Busca satélites de todas as ocorrências de uma vez (sem loop de conexões)
+            if (!ocorrenciaMap.isEmpty()) {
+                String sqlSatelites =
+                    "SELECT os.id_ocorrencia, s.nome, s.agencia " +
+                    "FROM OCORRENCIA_SATELITE os " +
+                    "INNER JOIN SATELITE s ON s.id_satelite = os.id_satelite";
+
+                try (PreparedStatement ps = con.prepareStatement(sqlSatelites);
+                     ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int idOc = rs.getInt("id_ocorrencia");
+                        if (ocorrenciaMap.containsKey(idOc)) {
+                            @SuppressWarnings("unchecked")
+                            List<String> nomes = (List<String>) ocorrenciaMap.get(idOc).get("satelites_detectores");
+                            nomes.add(rs.getString("nome") + " (" + rs.getString("agencia") + ")");
+                        }
+                    }
+                }
+            }
+
+            // 3. Conta alertas por ocorrência de uma vez
+            String sqlAlertas =
+                "SELECT id_ocorrencia, COUNT(*) AS total " +
+                "FROM ALERTA GROUP BY id_ocorrencia";
+
+            long totalAlertas = 0;
+            try (PreparedStatement ps = con.prepareStatement(sqlAlertas);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int idOc = rs.getInt("id_ocorrencia");
+                    long total = rs.getLong("total");
+                    totalAlertas += total;
+                    if (ocorrenciaMap.containsKey(idOc)) {
+                        ocorrenciaMap.get(idOc).put("total_alertas", total);
+                    }
+                }
+            }
+
+            // 4. Monta sumário
+            long totalAtivo      = ocorrencias.stream().filter(o -> "ATIVO".equals(o.get("status"))).count();
+            long totalControlado = ocorrencias.stream().filter(o -> "CONTROLADO".equals(o.get("status"))).count();
+            long totalResolvido  = ocorrencias.stream().filter(o -> "RESOLVIDO".equals(o.get("status"))).count();
 
             Map<String, Object> rel = new LinkedHashMap<>();
             rel.put("gerado_em",         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
-            rel.put("total_ocorrencias", todas.size());
+            rel.put("total_ocorrencias", ocorrencias.size());
             rel.put("total_ativo",       totalAtivo);
             rel.put("total_controlado",  totalControlado);
             rel.put("total_resolvido",   totalResolvido);
-            rel.put("total_alertas",     alertas.size());
-            rel.put("ocorrencias",       detalhes);
+            rel.put("total_alertas",     totalAlertas);
+            rel.put("ocorrencias",       ocorrencias);
 
             return Response.ok(rel).build();
 
-        } catch (ExcecoesConexao e) {
+        } catch (ExcecoesConexao | java.sql.SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(erroJson(e)).build();
         }
     }
