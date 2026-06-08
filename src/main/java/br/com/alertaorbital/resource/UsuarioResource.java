@@ -28,7 +28,7 @@ public class UsuarioResource {
      * Retorna 201 + usuario criado (sem dados sensíveis)
      */
     @POST
-    @Path("/auth/cadastro")
+    @Path("/cadastro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrar(Usuario usuario) {
@@ -46,7 +46,7 @@ public class UsuarioResource {
      * Retorna 200 + usuario (sem dados sensíveis) ou 401
      */
     @POST
-    @Path("/auth/login")
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(Map<String, String> credenciais) {
