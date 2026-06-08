@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
-import java.util.Map;
 
 @Path("/")
 public class UsuarioResource {
@@ -18,17 +17,18 @@ public class UsuarioResource {
         return "{\"erro\":\"" + msg + "\"}";
     }
 
+    // DTO interno para o login — resolve o "additionalProp" no Swagger
+    public static class LoginRequest {
+        public String email;
+        public String senha;
+    }
+
     // =========================================================================
     // AUTH
     // =========================================================================
 
-    /**
-     * POST /auth/cadastro
-     * Body: { "nome": "...", "cargo": "...", "email": "...", "senha": "..." }
-     * Retorna 201 + usuario criado (sem dados sensíveis)
-     */
     @POST
-    @Path("/cadastro")
+    @Path("/auth/cadastro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrar(Usuario usuario) {
@@ -40,20 +40,13 @@ public class UsuarioResource {
         }
     }
 
-    /**
-     * POST /auth/login
-     * Body: { "email": "...", "senha": "..." }
-     * Retorna 200 + usuario (sem dados sensíveis) ou 401
-     */
     @POST
-    @Path("/login")
+    @Path("/auth/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(Map<String, String> credenciais) {
+    public Response login(LoginRequest req) {
         try {
-            String email = credenciais.get("email");
-            String senha = credenciais.get("senha");
-            Usuario usuario = new UsuarioBO().login(email, senha);
+            Usuario usuario = new UsuarioBO().login(req.email, req.senha);
             return Response.ok(usuario).build();
         } catch (ExcecoesConexao e) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(erroJson(e)).build();
