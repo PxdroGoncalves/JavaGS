@@ -12,9 +12,8 @@ public class Ocorrencia {
 
     // Objetos aninhados para leitura (preenchidos pelo DAO via JOIN)
     private String nomeRegiao;
-    private String estadoRegiao;
+    private String cidadeRegiao;
     private String nomeTipo;
-    private String nivelRisco;
 
     public Ocorrencia() {
         super();
@@ -56,14 +55,11 @@ public class Ocorrencia {
     public String getNomeRegiao() { return nomeRegiao; }
     public void setNomeRegiao(String nomeRegiao) { this.nomeRegiao = nomeRegiao; }
 
-    public String getEstadoRegiao() { return estadoRegiao; }
-    public void setEstadoRegiao(String estadoRegiao) { this.estadoRegiao = estadoRegiao; }
+    public String getCidadeRegiao() { return cidadeRegiao; }
+    public void setCidadeRegiao(String cidadeRegiao) { this.cidadeRegiao = cidadeRegiao; }
 
     public String getNomeTipo() { return nomeTipo; }
     public void setNomeTipo(String nomeTipo) { this.nomeTipo = nomeTipo; }
-
-    public String getNivelRisco() { return nivelRisco; }
-    public void setNivelRisco(String nivelRisco) { this.nivelRisco = nivelRisco; }
 
     @Override
     public String toString() {

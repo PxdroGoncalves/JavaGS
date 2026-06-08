@@ -11,10 +11,10 @@ public class RegiaoBO {
     public Regiao cadastrar(Regiao regiao) throws ExcecoesConexao {
         if (regiao.getNome() == null || regiao.getNome().isBlank())
             throw new ExcecoesConexao("nome da regiao é obrigatorio");
-        if (regiao.getEstado() == null || regiao.getEstado().length() != 2)
-            throw new ExcecoesConexao("estado deve ter 2 caracteres (sigla UF)");
+        if (regiao.getCidade() == null || regiao.getCidade().isBlank())
+            throw new ExcecoesConexao("cidade da regiao é obrigatoria");
         if (regiao.getPais() == null || regiao.getPais().isBlank())
-            regiao.setPais("Brasil");
+            throw new ExcecoesConexao("pais da regiao é obrigatorio");
 
         RegiaoDAO dao = new RegiaoDAO();
         dao.cadastrar(regiao);
@@ -22,20 +22,20 @@ public class RegiaoBO {
     }
 
     public List<Regiao> listar() throws ExcecoesConexao {
-        RegiaoDAO dao = new RegiaoDAO();
-        return dao.listar();
+        return new RegiaoDAO().listar();
     }
 
     public Regiao buscarPorId(int id) throws ExcecoesConexao {
-        RegiaoDAO dao = new RegiaoDAO();
-        return dao.buscarPorId(id);
+        return new RegiaoDAO().buscarPorId(id);
     }
 
     public Regiao atualizar(Regiao regiao) throws ExcecoesConexao {
         if (regiao.getNome() == null || regiao.getNome().isBlank())
             throw new ExcecoesConexao("nome da regiao é obrigatorio");
-        if (regiao.getEstado() == null || regiao.getEstado().length() != 2)
-            throw new ExcecoesConexao("estado deve ter 2 caracteres (sigla UF)");
+        if (regiao.getCidade() == null || regiao.getCidade().isBlank())
+            throw new ExcecoesConexao("cidade da regiao é obrigatoria");
+        if (regiao.getPais() == null || regiao.getPais().isBlank())
+            throw new ExcecoesConexao("pais da regiao é obrigatorio");
 
         RegiaoDAO dao = new RegiaoDAO();
         dao.atualizar(regiao);
@@ -43,7 +43,6 @@ public class RegiaoBO {
     }
 
     public void deletar(int id) throws ExcecoesConexao {
-        RegiaoDAO dao = new RegiaoDAO();
-        dao.deletar(id);
+        new RegiaoDAO().deletar(id);
     }
 }

@@ -32,7 +32,6 @@ public class RelatorioResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response gerarRelatorio() {
-        // Uma única conexão para todo o relatório — fecha no finally
         try (Connection con = ConexaoFactory.getConnection()) {
 
             // 1. Busca todas as ocorrências com JOIN em uma query
@@ -40,7 +39,7 @@ public class RelatorioResource {
                 "SELECT o.id_ocorrencia, o.descricao, o.status, " +
                 "TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, " +
                 "TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, " +
-                "r.nome AS nome_regiao, r.estado AS estado_regiao, " +
+                "r.nome AS nome_regiao, r.cidade AS cidade_regiao, " +
                 "td.nome AS nome_tipo, td.nivel_risco " +
                 "FROM OCORRENCIA o " +
                 "INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao " +
@@ -61,7 +60,7 @@ public class RelatorioResource {
                     item.put("data_inicio",          rs.getString("data_inicio"));
                     item.put("data_fim",             rs.getString("data_fim"));
                     item.put("regiao",               rs.getString("nome_regiao"));
-                    item.put("estado",               rs.getString("estado_regiao"));
+                    item.put("cidade",               rs.getString("cidade_regiao"));
                     item.put("tipo_desastre",        rs.getString("nome_tipo"));
                     item.put("nivel_risco",          rs.getString("nivel_risco"));
                     item.put("satelites_detectores", new ArrayList<String>());
@@ -71,7 +70,7 @@ public class RelatorioResource {
                 }
             }
 
-            // 2. Busca satélites de todas as ocorrências de uma vez (sem loop de conexões)
+            // 2. Busca satélites de todas as ocorrências de uma vez
             if (!ocorrenciaMap.isEmpty()) {
                 String sqlSatelites =
                     "SELECT os.id_ocorrencia, s.nome, s.agencia " +
