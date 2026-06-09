@@ -11,7 +11,6 @@ public class Ocorrencia {
     private int idTipo;
 
     // Objetos aninhados para leitura (preenchidos pelo DAO via JOIN)
-    private String nomeRegiao;
     private String cidadeRegiao;
     private String nomeTipo;
 
@@ -52,8 +51,6 @@ public class Ocorrencia {
     public int getIdTipo() { return idTipo; }
     public void setIdTipo(int idTipo) { this.idTipo = idTipo; }
 
-    public String getNomeRegiao() { return nomeRegiao; }
-    public void setNomeRegiao(String nomeRegiao) { this.nomeRegiao = nomeRegiao; }
 
     public String getCidadeRegiao() { return cidadeRegiao; }
     public void setCidadeRegiao(String cidadeRegiao) { this.cidadeRegiao = cidadeRegiao; }

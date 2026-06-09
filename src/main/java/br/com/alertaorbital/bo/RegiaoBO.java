@@ -9,8 +9,6 @@ import java.util.List;
 public class RegiaoBO {
 
     public Regiao cadastrar(Regiao regiao) throws ExcecoesConexao {
-        if (regiao.getNome() == null || regiao.getNome().isBlank())
-            throw new ExcecoesConexao("nome da regiao é obrigatorio");
         if (regiao.getCidade() == null || regiao.getCidade().isBlank())
             throw new ExcecoesConexao("cidade da regiao é obrigatoria");
         if (regiao.getPais() == null || regiao.getPais().isBlank())
@@ -30,8 +28,6 @@ public class RegiaoBO {
     }
 
     public Regiao atualizar(Regiao regiao) throws ExcecoesConexao {
-        if (regiao.getNome() == null || regiao.getNome().isBlank())
-            throw new ExcecoesConexao("nome da regiao é obrigatorio");
         if (regiao.getCidade() == null || regiao.getCidade().isBlank())
             throw new ExcecoesConexao("cidade da regiao é obrigatoria");
         if (regiao.getPais() == null || regiao.getPais().isBlank())
