@@ -29,14 +29,13 @@ public class UsuarioDAO {
     }
 
     public void cadastrar(Usuario usuario) throws ExcecoesConexao {
-        String sql = "INSERT INTO USUARIO (nome, cargo, email, senha_hash, senha_salt) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO USUARIO (nome, cargo, email, senha_hash) VALUES (?, ?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_usuario"})) {
             ps.setString(1, usuario.getNome());
             ps.setString(2, usuario.getCargo());
             ps.setString(3, usuario.getEmail());
             ps.setString(4, usuario.getSenhaHash());
-            ps.setString(5, gerarSalt());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) usuario.setIdUsuario(rs.getInt(1));
