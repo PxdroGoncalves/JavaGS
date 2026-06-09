@@ -2,6 +2,7 @@ package br.com.alertaorbital.bo;
 
 import br.com.alertaorbital.dao.OcorrenciaDAO;
 import br.com.alertaorbital.dao.OcorrenciaSateliteDAO;
+import br.com.alertaorbital.dao.SateliteDAO;
 import br.com.alertaorbital.entities.Ocorrencia;
 import br.com.alertaorbital.entities.OcorrenciaSatelite;
 import br.com.alertaorbital.entities.Satelite;
@@ -113,11 +114,21 @@ public class OcorrenciaBO {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         if (osDAO.vinculoExiste(idOcorrencia, idSatelite))
             throw new ExcecoesConexao("Satelite ja esta vinculado a esta ocorrencia");
+
+        // Valida que o satelite existe e recupera nome/agencia para devolver na resposta
+        Satelite satelite = new SateliteDAO().buscarPorId(idSatelite);
+        if (satelite == null)
+            throw new ExcecoesConexao("Satelite nao encontrado para o id: " + idSatelite);
+
         if (dataDeteccao == null || dataDeteccao.isBlank())
             dataDeteccao = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         OcorrenciaSatelite os = new OcorrenciaSatelite(idOcorrencia, idSatelite, dataDeteccao);
         osDAO.vincular(os);
+
+        // Preenche os campos extras (JOIN) para que nao retornem null
+        os.setNomeSatelite(satelite.getNome());
+        os.setAgenciaSatelite(satelite.getAgencia());
         return os;
     }
 
