@@ -18,6 +18,7 @@ public class TipoDesastreResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listar() {
         try {
             return Response.ok(new TipoDesastreBO().listar()).build();
@@ -29,6 +30,7 @@ public class TipoDesastreResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Consulta informações com base nos parâmetros recebidos.
     public Response buscarPorId(@PathParam("id") int id) {
         try {
             TipoDesastre td = new TipoDesastreBO().buscarPorId(id);
@@ -44,6 +46,7 @@ public class TipoDesastreResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Response cadastrar(TipoDesastre td) {
         try {
             return Response.status(Response.Status.CREATED).entity(new TipoDesastreBO().cadastrar(td)).build();
@@ -56,6 +59,7 @@ public class TipoDesastreResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Atualiza as informações do registro existente.
     public Response atualizar(@PathParam("id") int id, TipoDesastre td) {
         try {
             td.setIdTipo(id);
@@ -68,6 +72,7 @@ public class TipoDesastreResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Remove o registro correspondente da base de dados.
     public Response deletar(@PathParam("id") int id) {
         try {
             new TipoDesastreBO().deletar(id);

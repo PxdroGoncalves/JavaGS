@@ -10,6 +10,7 @@ import java.util.List;
 
 public class OcorrenciaDAO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Ocorrencia o) throws ExcecoesConexao {
         String sql = "INSERT INTO OCORRENCIA (data_inicio, data_fim, descricao, status, id_regiao, id_tipo) VALUES (TO_DATE(?,'YYYY-MM-DD'), TO_DATE(?,'YYYY-MM-DD'), ?, ?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -33,8 +34,9 @@ public class OcorrenciaDAO {
         }
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listar() throws ExcecoesConexao {
-        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.cidade AS cidade_regiao, td.nome AS nome_tipo FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo ORDER BY o.data_inicio DESC";
+        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo ORDER BY o.data_inicio DESC";
         List<Ocorrencia> lista = new ArrayList<>();
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -46,8 +48,9 @@ public class OcorrenciaDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Ocorrencia buscarPorId(int id) throws ExcecoesConexao {
-        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.cidade AS cidade_regiao, td.nome AS nome_tipo FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_ocorrencia = ?";
+        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_ocorrencia = ?";
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -60,8 +63,9 @@ public class OcorrenciaDAO {
         return null;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorStatus(String status) throws ExcecoesConexao {
-        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.cidade AS cidade_regiao, td.nome AS nome_tipo FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.status = ? ORDER BY o.data_inicio DESC";
+        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.status = ? ORDER BY o.data_inicio DESC";
         List<Ocorrencia> lista = new ArrayList<>();
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -75,8 +79,9 @@ public class OcorrenciaDAO {
         return lista;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorRegiao(int idRegiao) throws ExcecoesConexao {
-        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.cidade AS cidade_regiao, td.nome AS nome_tipo FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_regiao = ? ORDER BY o.data_inicio DESC";
+        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo WHERE o.id_regiao = ? ORDER BY o.data_inicio DESC";
         List<Ocorrencia> lista = new ArrayList<>();
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -90,8 +95,9 @@ public class OcorrenciaDAO {
         return lista;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorSatelite(int idSatelite) throws ExcecoesConexao {
-        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.cidade AS cidade_regiao, td.nome AS nome_tipo FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo INNER JOIN OCORRENCIA_SATELITE os ON os.id_ocorrencia = o.id_ocorrencia WHERE os.id_satelite = ? ORDER BY o.data_inicio DESC";
+        String sql = "SELECT o.id_ocorrencia, TO_CHAR(o.data_inicio,'YYYY-MM-DD') AS data_inicio, TO_CHAR(o.data_fim,'YYYY-MM-DD') AS data_fim, o.descricao, o.status, o.id_regiao, o.id_tipo, r.nome AS nome_regiao, r.estado AS estado_regiao, td.nome AS nome_tipo, td.nivel_risco FROM OCORRENCIA o INNER JOIN REGIAO r ON r.id_regiao = o.id_regiao INNER JOIN TIPO_DESASTRE td ON td.id_tipo = o.id_tipo INNER JOIN OCORRENCIA_SATELITE os ON os.id_ocorrencia = o.id_ocorrencia WHERE os.id_satelite = ? ORDER BY o.data_inicio DESC";
         List<Ocorrencia> lista = new ArrayList<>();
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -105,6 +111,7 @@ public class OcorrenciaDAO {
         return lista;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(Ocorrencia o) throws ExcecoesConexao {
         String sql = "UPDATE OCORRENCIA SET data_inicio = TO_DATE(?,'YYYY-MM-DD'), data_fim = TO_DATE(?,'YYYY-MM-DD'), descricao = ?, status = ?, id_regiao = ?, id_tipo = ? WHERE id_ocorrencia = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -126,6 +133,7 @@ public class OcorrenciaDAO {
         }
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizarStatus(int id, String novoStatus) throws ExcecoesConexao {
         String sql = "UPDATE OCORRENCIA SET status = ? WHERE id_ocorrencia = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -138,6 +146,7 @@ public class OcorrenciaDAO {
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM OCORRENCIA WHERE id_ocorrencia = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -158,8 +167,10 @@ public class OcorrenciaDAO {
         o.setStatus(rs.getString("status"));
         o.setIdRegiao(rs.getInt("id_regiao"));
         o.setIdTipo(rs.getInt("id_tipo"));
-        o.setCidadeRegiao(rs.getString("cidade_regiao"));
+        o.setNomeRegiao(rs.getString("nome_regiao"));
+        o.setEstadoRegiao(rs.getString("estado_regiao"));
         o.setNomeTipo(rs.getString("nome_tipo"));
+        o.setNivelRisco(rs.getString("nivel_risco"));
         return o;
     }
 }

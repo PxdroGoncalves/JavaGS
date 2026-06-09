@@ -16,6 +16,7 @@ public class OcorrenciaBO {
 
     private static final List<String> STATUS_VALIDOS = Arrays.asList("ATIVO", "CONTROLADO", "RESOLVIDO");
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Ocorrencia cadastrar(Ocorrencia o) throws ExcecoesConexao {
         if (o.getDataInicio() == null || o.getDataInicio().isBlank())
             throw new ExcecoesConexao("data_inicio e obrigatoria");
@@ -36,16 +37,19 @@ public class OcorrenciaBO {
         return dao.buscarPorId(o.getIdOcorrencia());
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listar() throws ExcecoesConexao {
         OcorrenciaDAO dao = new OcorrenciaDAO();
         return dao.listar();
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Ocorrencia buscarPorId(int id) throws ExcecoesConexao {
         OcorrenciaDAO dao = new OcorrenciaDAO();
         return dao.buscarPorId(id);
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorStatus(String status) throws ExcecoesConexao {
         if (!STATUS_VALIDOS.contains(status.toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
@@ -53,16 +57,19 @@ public class OcorrenciaBO {
         return dao.listarPorStatus(status.toUpperCase());
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorRegiao(int idRegiao) throws ExcecoesConexao {
         OcorrenciaDAO dao = new OcorrenciaDAO();
         return dao.listarPorRegiao(idRegiao);
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Ocorrencia> listarPorSatelite(int idSatelite) throws ExcecoesConexao {
         OcorrenciaDAO dao = new OcorrenciaDAO();
         return dao.listarPorSatelite(idSatelite);
     }
 
+    // Atualiza as informações do registro existente.
     public Ocorrencia atualizar(Ocorrencia o) throws ExcecoesConexao {
         if (o.getDataInicio() == null || o.getDataInicio().isBlank())
             throw new ExcecoesConexao("data_inicio e obrigatoria");
@@ -83,6 +90,7 @@ public class OcorrenciaBO {
     }
 
     // Regra de negocio: progressao ATIVO -> CONTROLADO -> RESOLVIDO sem retrocesso
+    // Atualiza as informações do registro existente.
     public Ocorrencia atualizarStatus(int id, String novoStatus) throws ExcecoesConexao {
         if (!STATUS_VALIDOS.contains(novoStatus.toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
@@ -104,11 +112,13 @@ public class OcorrenciaBO {
         return dao.buscarPorId(id);
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         OcorrenciaDAO dao = new OcorrenciaDAO();
         dao.deletar(id);
     }
 
+    // Executa a operação relacionada a vincularSatelite.
     public OcorrenciaSatelite vincularSatelite(int idOcorrencia, int idSatelite, String dataDeteccao) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         if (osDAO.vinculoExiste(idOcorrencia, idSatelite))
@@ -121,6 +131,7 @@ public class OcorrenciaBO {
         return os;
     }
 
+    // Executa a operação relacionada a desvincularSatelite.
     public void desvincularSatelite(int idOcorrencia, int idSatelite) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         if (!osDAO.vinculoExiste(idOcorrencia, idSatelite))
@@ -128,6 +139,7 @@ public class OcorrenciaBO {
         osDAO.desvincular(idOcorrencia, idSatelite);
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Satelite> listarSatelites(int idOcorrencia) throws ExcecoesConexao {
         OcorrenciaSateliteDAO osDAO = new OcorrenciaSateliteDAO();
         return osDAO.listarSatelitesPorOcorrencia(idOcorrencia);

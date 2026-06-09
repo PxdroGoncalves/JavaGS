@@ -17,6 +17,7 @@ public class UsuarioBO {
     // -------------------------------------------------------------------------
     // Utilitário: SHA-256
     // -------------------------------------------------------------------------
+    // Executa a operação relacionada a sha256.
     public static String sha256(String texto) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -32,6 +33,7 @@ public class UsuarioBO {
     // -------------------------------------------------------------------------
     // CADASTRO
     // -------------------------------------------------------------------------
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Usuario cadastrar(Usuario usuario) throws ExcecoesConexao {
         if (usuario.getNome() == null || usuario.getNome().isBlank())
             throw new ExcecoesConexao("nome é obrigatorio");
@@ -52,6 +54,7 @@ public class UsuarioBO {
     // -------------------------------------------------------------------------
     // LOGIN
     // -------------------------------------------------------------------------
+    // Verifica as credenciais e autentica o usuário.
     public Usuario login(String email, String senha) throws ExcecoesConexao {
         if (email == null || email.isBlank())
             throw new ExcecoesConexao("email é obrigatorio");
@@ -68,14 +71,17 @@ public class UsuarioBO {
     // -------------------------------------------------------------------------
     // CRUD
     // -------------------------------------------------------------------------
+    // Busca e retorna os registros solicitados.
     public List<Usuario> listar() throws ExcecoesConexao {
         return new UsuarioDAO().listar();
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Usuario buscarPorId(int id) throws ExcecoesConexao {
         return new UsuarioDAO().buscarPorId(id);
     }
 
+    // Atualiza as informações do registro existente.
     public Usuario atualizar(Usuario usuario) throws ExcecoesConexao {
         if (usuario.getNome() == null || usuario.getNome().isBlank())
             throw new ExcecoesConexao("nome é obrigatorio");
@@ -97,6 +103,7 @@ public class UsuarioBO {
         return dao.buscarPorId(usuario.getIdUsuario());
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         new UsuarioDAO().deletar(id);
     }

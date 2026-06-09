@@ -28,6 +28,7 @@ public class UsuarioDAO {
         return u;
     }
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Usuario usuario) throws ExcecoesConexao {
         String sql = "INSERT INTO USUARIO (nome, cargo, email, senha_hash, senha_salt) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -46,6 +47,7 @@ public class UsuarioDAO {
         }
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Usuario buscarPorEmailESenha(String email, String senhaHash) throws ExcecoesConexao {
         String sql = "SELECT id_usuario, nome, cargo, email FROM USUARIO " +
                      "WHERE email = ? AND senha_hash = ? AND ativo = 'S'";
@@ -62,6 +64,7 @@ public class UsuarioDAO {
         return null;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Usuario> listar() throws ExcecoesConexao {
         String sql = "SELECT id_usuario, nome, cargo, email FROM USUARIO ORDER BY nome";
         List<Usuario> lista = new ArrayList<>();
@@ -75,6 +78,7 @@ public class UsuarioDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Usuario buscarPorId(int id) throws ExcecoesConexao {
         String sql = "SELECT id_usuario, nome, cargo, email FROM USUARIO WHERE id_usuario = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -89,6 +93,7 @@ public class UsuarioDAO {
         return null;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(Usuario usuario) throws ExcecoesConexao {
         String sql = usuario.getSenhaHash() != null
                 ? "UPDATE USUARIO SET nome = ?, cargo = ?, email = ?, senha_hash = ? WHERE id_usuario = ?"
@@ -110,6 +115,7 @@ public class UsuarioDAO {
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM USUARIO WHERE id_usuario = ?";
         try (Connection con = ConexaoFactory.getConnection();

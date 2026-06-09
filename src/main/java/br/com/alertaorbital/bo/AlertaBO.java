@@ -10,6 +10,7 @@ import java.util.List;
 
 public class AlertaBO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Alerta cadastrar(Alerta alerta) throws ExcecoesConexao {
         if (alerta.getMensagem() == null || alerta.getMensagem().isBlank())
             throw new ExcecoesConexao("mensagem é obrigatoria");
@@ -25,26 +26,31 @@ public class AlertaBO {
         return dao.buscarPorId(alerta.getIdAlerta());
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listar() throws ExcecoesConexao {
         AlertaDAO dao = new AlertaDAO();
         return dao.listar();
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Alerta buscarPorId(int id) throws ExcecoesConexao {
         AlertaDAO dao = new AlertaDAO();
         return dao.buscarPorId(id);
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listarPorUsuario(int idUsuario) throws ExcecoesConexao {
         AlertaDAO dao = new AlertaDAO();
         return dao.listarPorUsuario(idUsuario);
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listarPorOcorrencia(int idOcorrencia) throws ExcecoesConexao {
         AlertaDAO dao = new AlertaDAO();
         return dao.listarPorOcorrencia(idOcorrencia);
     }
 
+    // Atualiza as informações do registro existente.
     public Alerta atualizar(Alerta alerta) throws ExcecoesConexao {
         if (alerta.getMensagem() == null || alerta.getMensagem().isBlank())
             throw new ExcecoesConexao("mensagem é obrigatoria");
@@ -58,6 +64,7 @@ public class AlertaBO {
         return dao.buscarPorId(alerta.getIdAlerta());
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         AlertaDAO dao = new AlertaDAO();
         dao.deletar(id);

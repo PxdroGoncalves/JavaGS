@@ -18,6 +18,7 @@ public class RegiaoResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listar() {
         try {
             return Response.ok(new RegiaoBO().listar()).build();
@@ -29,6 +30,7 @@ public class RegiaoResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Consulta informações com base nos parâmetros recebidos.
     public Response buscarPorId(@PathParam("id") int id) {
         try {
             Regiao r = new RegiaoBO().buscarPorId(id);
@@ -44,6 +46,7 @@ public class RegiaoResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Response cadastrar(Regiao regiao) {
         try {
             return Response.status(Response.Status.CREATED).entity(new RegiaoBO().cadastrar(regiao)).build();
@@ -56,6 +59,7 @@ public class RegiaoResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Atualiza as informações do registro existente.
     public Response atualizar(@PathParam("id") int id, Regiao regiao) {
         try {
             regiao.setIdRegiao(id);
@@ -68,6 +72,7 @@ public class RegiaoResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Remove o registro correspondente da base de dados.
     public Response deletar(@PathParam("id") int id) {
         try {
             new RegiaoBO().deletar(id);

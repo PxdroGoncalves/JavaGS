@@ -10,12 +10,14 @@ import java.util.List;
 
 public class RegiaoDAO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Regiao regiao) throws ExcecoesConexao {
-        String sql = "INSERT INTO REGIAO (cidade, pais) VALUES (?, ?)";
+        String sql = "INSERT INTO REGIAO (nome, estado, pais) VALUES (?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_regiao"})) {
-            ps.setString(1, regiao.getCidade());
-            ps.setString(2, regiao.getPais());
+            ps.setString(1, regiao.getNome());
+            ps.setString(2, regiao.getEstado());
+            ps.setString(3, regiao.getPais() != null ? regiao.getPais() : "Brasil");
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) regiao.setIdRegiao(rs.getInt(1));
@@ -25,8 +27,9 @@ public class RegiaoDAO {
         }
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Regiao> listar() throws ExcecoesConexao {
-        String sql = "SELECT id_regiao, cidade, pais FROM REGIAO ORDER BY pais, cidade";
+        String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO ORDER BY estado, nome";
         List<Regiao> lista = new ArrayList<>();
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -34,7 +37,8 @@ public class RegiaoDAO {
             while (rs.next()) {
                 lista.add(new Regiao(
                         rs.getInt("id_regiao"),
-                        rs.getString("cidade"),
+                        rs.getString("nome"),
+                        rs.getString("estado"),
                         rs.getString("pais")
                 ));
             }
@@ -44,13 +48,14 @@ public class RegiaoDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Regiao buscarPorId(int id) throws ExcecoesConexao {
-        String sql = "SELECT id_regiao, cidade, pais FROM REGIAO WHERE id_regiao = ?";
+        String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return new Regiao(rs.getInt("id_regiao"), rs.getString("cidade"), rs.getString("pais"));
+                if (rs.next()) return new Regiao(rs.getInt("id_regiao"), rs.getString("nome"), rs.getString("estado"), rs.getString("pais"));
             }
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
@@ -58,19 +63,22 @@ public class RegiaoDAO {
         return null;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(Regiao regiao) throws ExcecoesConexao {
-        String sql = "UPDATE REGIAO SET cidade = ?, pais = ? WHERE id_regiao = ?";
+        String sql = "UPDATE REGIAO SET nome = ?, estado = ?, pais = ? WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, regiao.getCidade());
-            ps.setString(2, regiao.getPais());
-            ps.setInt(3, regiao.getIdRegiao());
+            ps.setString(1, regiao.getNome());
+            ps.setString(2, regiao.getEstado());
+            ps.setString(3, regiao.getPais());
+            ps.setInt(4, regiao.getIdRegiao());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new ExcecoesConexao(e);
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM REGIAO WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();

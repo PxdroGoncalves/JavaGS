@@ -31,6 +31,7 @@ public class UsuarioResource {
     @Path("/auth/cadastro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Response cadastrar(Usuario usuario) {
         try {
             Usuario criado = new UsuarioBO().cadastrar(usuario);
@@ -44,6 +45,7 @@ public class UsuarioResource {
     @Path("/auth/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Verifica as credenciais e autentica o usuário.
     public Response login(LoginRequest req) {
         try {
             Usuario usuario = new UsuarioBO().login(req.email, req.senha);
@@ -60,6 +62,7 @@ public class UsuarioResource {
     @GET
     @Path("/usuarios")
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listar() {
         try {
             List<Usuario> lista = new UsuarioBO().listar();
@@ -72,6 +75,7 @@ public class UsuarioResource {
     @GET
     @Path("/usuarios/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Consulta informações com base nos parâmetros recebidos.
     public Response buscarPorId(@PathParam("id") int id) {
         try {
             Usuario u = new UsuarioBO().buscarPorId(id);
@@ -88,6 +92,7 @@ public class UsuarioResource {
     @Path("/usuarios/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Atualiza as informações do registro existente.
     public Response atualizar(@PathParam("id") int id, Usuario usuario) {
         try {
             usuario.setIdUsuario(id);
@@ -100,6 +105,7 @@ public class UsuarioResource {
     @DELETE
     @Path("/usuarios/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Remove o registro correspondente da base de dados.
     public Response deletar(@PathParam("id") int id) {
         try {
             new UsuarioBO().deletar(id);

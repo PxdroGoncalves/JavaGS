@@ -10,6 +10,7 @@ import java.util.List;
 
 public class SateliteDAO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Satelite satelite) throws ExcecoesConexao {
         String sql = "INSERT INTO SATELITE (nome, agencia, operacional) VALUES (?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -26,6 +27,7 @@ public class SateliteDAO {
         }
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Satelite> listar() throws ExcecoesConexao {
         String sql = "SELECT id_satelite, nome, agencia, operacional FROM SATELITE ORDER BY nome";
         List<Satelite> lista = new ArrayList<>();
@@ -39,6 +41,7 @@ public class SateliteDAO {
         return lista;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Satelite> listarOperacionais() throws ExcecoesConexao {
         String sql = "SELECT id_satelite, nome, agencia, operacional FROM SATELITE WHERE operacional = 'S' ORDER BY nome";
         List<Satelite> lista = new ArrayList<>();
@@ -52,6 +55,7 @@ public class SateliteDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Satelite buscarPorId(int id) throws ExcecoesConexao {
         String sql = "SELECT id_satelite, nome, agencia, operacional FROM SATELITE WHERE id_satelite = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -66,6 +70,7 @@ public class SateliteDAO {
         return null;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(Satelite satelite) throws ExcecoesConexao {
         String sql = "UPDATE SATELITE SET nome = ?, agencia = ?, operacional = ? WHERE id_satelite = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -80,6 +85,7 @@ public class SateliteDAO {
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM SATELITE WHERE id_satelite = ?";
         try (Connection con = ConexaoFactory.getConnection();

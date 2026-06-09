@@ -10,6 +10,7 @@ import java.util.List;
 
 public class TipoDesastreDAO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(TipoDesastre td) throws ExcecoesConexao {
         String sql = "INSERT INTO TIPO_DESASTRE (nome, descricao, nivel_risco) VALUES (?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -26,6 +27,7 @@ public class TipoDesastreDAO {
         }
     }
 
+    // Busca e retorna os registros solicitados.
     public List<TipoDesastre> listar() throws ExcecoesConexao {
         String sql = "SELECT id_tipo, nome, descricao, nivel_risco FROM TIPO_DESASTRE ORDER BY nome";
         List<TipoDesastre> lista = new ArrayList<>();
@@ -39,6 +41,7 @@ public class TipoDesastreDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public TipoDesastre buscarPorId(int id) throws ExcecoesConexao {
         String sql = "SELECT id_tipo, nome, descricao, nivel_risco FROM TIPO_DESASTRE WHERE id_tipo = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -53,6 +56,7 @@ public class TipoDesastreDAO {
         return null;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(TipoDesastre td) throws ExcecoesConexao {
         String sql = "UPDATE TIPO_DESASTRE SET nome = ?, descricao = ?, nivel_risco = ? WHERE id_tipo = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -67,6 +71,7 @@ public class TipoDesastreDAO {
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM TIPO_DESASTRE WHERE id_tipo = ?";
         try (Connection con = ConexaoFactory.getConnection();

@@ -27,25 +27,38 @@ public class Usuario {
         this.email = email;
     }
 
+    // Executa a operação relacionada a getIdUsuario.
     public int getIdUsuario() { return idUsuario; }
+    // Executa a operação relacionada a setIdUsuario.
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
 
+    // Executa a operação relacionada a getNome.
     public String getNome() { return nome; }
+    // Executa a operação relacionada a setNome.
     public void setNome(String nome) { this.nome = nome; }
 
+    // Executa a operação relacionada a getCargo.
     public String getCargo() { return cargo; }
+    // Executa a operação relacionada a setCargo.
     public void setCargo(String cargo) { this.cargo = cargo; }
 
+    // Executa a operação relacionada a getEmail.
     public String getEmail() { return email; }
+    // Executa a operação relacionada a setEmail.
     public void setEmail(String email) { this.email = email; }
 
+    // Executa a operação relacionada a getSenhaHash.
     public String getSenhaHash() { return senhaHash; }
+    // Executa a operação relacionada a setSenhaHash.
     public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
 
+    // Executa a operação relacionada a getSenha.
     public String getSenha() { return senha; }
+    // Executa a operação relacionada a setSenha.
     public void setSenha(String senha) { this.senha = senha; }
 
     @Override
+    // Executa a operação relacionada a toString.
     public String toString() {
         return "Usuario{idUsuario=" + idUsuario + ", nome='" + nome + "', cargo='" + cargo + "', email='" + email + "'}";
     }

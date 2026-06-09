@@ -17,6 +17,7 @@ public class OcorrenciaResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listar() {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -31,6 +32,7 @@ public class OcorrenciaResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Consulta informações com base nos parâmetros recebidos.
     public Response buscarPorId(@PathParam("id") int id) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -48,6 +50,7 @@ public class OcorrenciaResource {
     @GET
     @Path("/status/{status}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listarPorStatus(@PathParam("status") String status) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -62,6 +65,7 @@ public class OcorrenciaResource {
     @GET
     @Path("/regiao/{idRegiao}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listarPorRegiao(@PathParam("idRegiao") int idRegiao) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -76,6 +80,7 @@ public class OcorrenciaResource {
     @GET
     @Path("/satelite/{idSatelite}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listarPorSatelite(@PathParam("idSatelite") int idSatelite) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -90,6 +95,7 @@ public class OcorrenciaResource {
     @GET
     @Path("/{id}/satelites")
     @Produces(MediaType.APPLICATION_JSON)
+    // Busca e retorna os registros solicitados.
     public Response listarSatelites(@PathParam("id") int id) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -104,6 +110,7 @@ public class OcorrenciaResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public Response cadastrar(Ocorrencia ocorrencia) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();
@@ -119,6 +126,7 @@ public class OcorrenciaResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Atualiza as informações do registro existente.
     public Response atualizar(@PathParam("id") int id, Ocorrencia ocorrencia) {
         try {
             ocorrencia.setIdOcorrencia(id);
@@ -137,6 +145,7 @@ public class OcorrenciaResource {
     @Path("/{id}/status")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Atualiza as informações do registro existente.
     public Response atualizarStatus(@PathParam("id") int id, Map<String, String> body) {
         try {
             String novoStatus = body.get("status");
@@ -158,6 +167,7 @@ public class OcorrenciaResource {
     @Path("/{id}/satelites")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    // Executa a operação relacionada a vincularSatelite.
     public Response vincularSatelite(@PathParam("id") int id, Map<String, Object> body) {
         try {
             Object idSateliteObj = body.get("idSatelite");
@@ -187,6 +197,7 @@ public class OcorrenciaResource {
     @DELETE
     @Path("/{id}/satelites/{idSatelite}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Executa a operação relacionada a desvincularSatelite.
     public Response desvincularSatelite(@PathParam("id") int id,
                                         @PathParam("idSatelite") int idSatelite) {
         try {
@@ -202,6 +213,7 @@ public class OcorrenciaResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    // Remove o registro correspondente da base de dados.
     public Response deletar(@PathParam("id") int id) {
         try {
             OcorrenciaBO bo = new OcorrenciaBO();

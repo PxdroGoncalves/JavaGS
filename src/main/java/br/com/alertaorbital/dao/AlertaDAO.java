@@ -10,6 +10,7 @@ import java.util.List;
 
 public class AlertaDAO {
 
+    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Alerta alerta) throws ExcecoesConexao {
         String sql = "INSERT INTO ALERTA (mensagem, data_emissao, id_ocorrencia, id_usuario) VALUES (?, TO_DATE(?,'YYYY-MM-DD'), ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -27,6 +28,7 @@ public class AlertaDAO {
         }
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listar() throws ExcecoesConexao {
         String sql = "SELECT a.id_alerta, a.mensagem, TO_CHAR(a.data_emissao,'YYYY-MM-DD') AS data_emissao, a.id_ocorrencia, a.id_usuario, u.nome AS nome_usuario, o.descricao AS descricao_ocorrencia, o.status AS status_ocorrencia FROM ALERTA a INNER JOIN USUARIO u ON u.id_usuario = a.id_usuario INNER JOIN OCORRENCIA o ON o.id_ocorrencia = a.id_ocorrencia ORDER BY a.data_emissao DESC";
         List<Alerta> lista = new ArrayList<>();
@@ -40,6 +42,7 @@ public class AlertaDAO {
         return lista;
     }
 
+    // Consulta informações com base nos parâmetros recebidos.
     public Alerta buscarPorId(int id) throws ExcecoesConexao {
         String sql = "SELECT a.id_alerta, a.mensagem, TO_CHAR(a.data_emissao,'YYYY-MM-DD') AS data_emissao, a.id_ocorrencia, a.id_usuario, u.nome AS nome_usuario, o.descricao AS descricao_ocorrencia, o.status AS status_ocorrencia FROM ALERTA a INNER JOIN USUARIO u ON u.id_usuario = a.id_usuario INNER JOIN OCORRENCIA o ON o.id_ocorrencia = a.id_ocorrencia WHERE a.id_alerta = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -54,6 +57,7 @@ public class AlertaDAO {
         return null;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listarPorUsuario(int idUsuario) throws ExcecoesConexao {
         String sql = "SELECT a.id_alerta, a.mensagem, TO_CHAR(a.data_emissao,'YYYY-MM-DD') AS data_emissao, a.id_ocorrencia, a.id_usuario, u.nome AS nome_usuario, o.descricao AS descricao_ocorrencia, o.status AS status_ocorrencia FROM ALERTA a INNER JOIN USUARIO u ON u.id_usuario = a.id_usuario INNER JOIN OCORRENCIA o ON o.id_ocorrencia = a.id_ocorrencia WHERE a.id_usuario = ? ORDER BY a.data_emissao DESC";
         List<Alerta> lista = new ArrayList<>();
@@ -69,6 +73,7 @@ public class AlertaDAO {
         return lista;
     }
 
+    // Busca e retorna os registros solicitados.
     public List<Alerta> listarPorOcorrencia(int idOcorrencia) throws ExcecoesConexao {
         String sql = "SELECT a.id_alerta, a.mensagem, TO_CHAR(a.data_emissao,'YYYY-MM-DD') AS data_emissao, a.id_ocorrencia, a.id_usuario, u.nome AS nome_usuario, o.descricao AS descricao_ocorrencia, o.status AS status_ocorrencia FROM ALERTA a INNER JOIN USUARIO u ON u.id_usuario = a.id_usuario INNER JOIN OCORRENCIA o ON o.id_ocorrencia = a.id_ocorrencia WHERE a.id_ocorrencia = ? ORDER BY a.data_emissao DESC";
         List<Alerta> lista = new ArrayList<>();
@@ -84,6 +89,7 @@ public class AlertaDAO {
         return lista;
     }
 
+    // Atualiza as informações do registro existente.
     public void atualizar(Alerta alerta) throws ExcecoesConexao {
         String sql = "UPDATE ALERTA SET mensagem = ?, data_emissao = TO_DATE(?,'YYYY-MM-DD'), id_ocorrencia = ?, id_usuario = ? WHERE id_alerta = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -99,6 +105,7 @@ public class AlertaDAO {
         }
     }
 
+    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM ALERTA WHERE id_alerta = ?";
         try (Connection con = ConexaoFactory.getConnection();
