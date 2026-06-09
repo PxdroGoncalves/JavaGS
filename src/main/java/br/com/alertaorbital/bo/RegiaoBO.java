@@ -8,7 +8,6 @@ import java.util.List;
 
 public class RegiaoBO {
 
-    // Valida os dados recebidos e realiza o cadastro do registro.
     public Regiao cadastrar(Regiao regiao) throws ExcecoesConexao {
         if (regiao.getNome() == null || regiao.getNome().isBlank())
             throw new ExcecoesConexao("nome da regiao é obrigatorio");
@@ -22,19 +21,16 @@ public class RegiaoBO {
         return regiao;
     }
 
-    // Busca e retorna os registros solicitados.
     public List<Regiao> listar() throws ExcecoesConexao {
         RegiaoDAO dao = new RegiaoDAO();
         return dao.listar();
     }
 
-    // Consulta informações com base nos parâmetros recebidos.
     public Regiao buscarPorId(int id) throws ExcecoesConexao {
         RegiaoDAO dao = new RegiaoDAO();
         return dao.buscarPorId(id);
     }
 
-    // Atualiza as informações do registro existente.
     public Regiao atualizar(Regiao regiao) throws ExcecoesConexao {
         if (regiao.getNome() == null || regiao.getNome().isBlank())
             throw new ExcecoesConexao("nome da regiao é obrigatorio");
@@ -46,7 +42,6 @@ public class RegiaoBO {
         return dao.buscarPorId(regiao.getIdRegiao());
     }
 
-    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         RegiaoDAO dao = new RegiaoDAO();
         dao.deletar(id);

@@ -18,7 +18,6 @@ public class AlertaResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    // Busca e retorna os registros solicitados.
     public Response listar() {
         try {
             AlertaBO bo = new AlertaBO();
@@ -31,7 +30,6 @@ public class AlertaResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    // Consulta informações com base nos parâmetros recebidos.
     public Response buscarPorId(@PathParam("id") int id) {
         try {
             AlertaBO bo = new AlertaBO();
@@ -48,7 +46,6 @@ public class AlertaResource {
     @GET
     @Path("/usuario/{idUsuario}")
     @Produces(MediaType.APPLICATION_JSON)
-    // Busca e retorna os registros solicitados.
     public Response listarPorUsuario(@PathParam("idUsuario") int idUsuario) {
         try {
             AlertaBO bo = new AlertaBO();
@@ -61,7 +58,6 @@ public class AlertaResource {
     @GET
     @Path("/ocorrencia/{idOcorrencia}")
     @Produces(MediaType.APPLICATION_JSON)
-    // Busca e retorna os registros solicitados.
     public Response listarPorOcorrencia(@PathParam("idOcorrencia") int idOcorrencia) {
         try {
             AlertaBO bo = new AlertaBO();
@@ -74,7 +70,6 @@ public class AlertaResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Valida os dados recebidos e realiza o cadastro do registro.
     public Response cadastrar(Alerta alerta) {
         try {
             AlertaBO bo = new AlertaBO();
@@ -88,7 +83,6 @@ public class AlertaResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Atualiza as informações do registro existente.
     public Response atualizar(@PathParam("id") int id, Alerta alerta) {
         try {
             alerta.setIdAlerta(id);
@@ -102,7 +96,6 @@ public class AlertaResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    // Remove o registro correspondente da base de dados.
     public Response deletar(@PathParam("id") int id) {
         try {
             new AlertaBO().deletar(id);

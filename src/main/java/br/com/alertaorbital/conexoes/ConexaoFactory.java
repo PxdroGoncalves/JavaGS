@@ -8,7 +8,6 @@ import java.sql.SQLException;
 
 public class ConexaoFactory {
 
-    // Executa a operação relacionada a getConnection.
     public static Connection getConnection() throws ExcecoesConexao {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");

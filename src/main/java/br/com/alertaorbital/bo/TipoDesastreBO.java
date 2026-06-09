@@ -11,7 +11,6 @@ public class TipoDesastreBO {
 
     private static final List<String> NIVEIS = Arrays.asList("BAIXO", "MEDIO", "ALTO", "CRITICO");
 
-    // Valida os dados recebidos e realiza o cadastro do registro.
     public TipoDesastre cadastrar(TipoDesastre td) throws ExcecoesConexao {
         if (td.getNome() == null || td.getNome().isBlank())
             throw new ExcecoesConexao("nome do tipo de desastre é obrigatorio");
@@ -24,19 +23,16 @@ public class TipoDesastreBO {
         return td;
     }
 
-    // Busca e retorna os registros solicitados.
     public List<TipoDesastre> listar() throws ExcecoesConexao {
         TipoDesastreDAO dao = new TipoDesastreDAO();
         return dao.listar();
     }
 
-    // Consulta informações com base nos parâmetros recebidos.
     public TipoDesastre buscarPorId(int id) throws ExcecoesConexao {
         TipoDesastreDAO dao = new TipoDesastreDAO();
         return dao.buscarPorId(id);
     }
 
-    // Atualiza as informações do registro existente.
     public TipoDesastre atualizar(TipoDesastre td) throws ExcecoesConexao {
         if (td.getNome() == null || td.getNome().isBlank())
             throw new ExcecoesConexao("nome do tipo de desastre é obrigatorio");
@@ -49,7 +45,6 @@ public class TipoDesastreBO {
         return dao.buscarPorId(td.getIdTipo());
     }
 
-    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         TipoDesastreDAO dao = new TipoDesastreDAO();
         dao.deletar(id);

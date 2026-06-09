@@ -31,7 +31,6 @@ public class RelatorioResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    // Gera os dados utilizados na montagem do relatório.
     public Response gerarRelatorio() {
         // Uma única conexão para todo o relatório — fecha no finally
         try (Connection con = ConexaoFactory.getConnection()) {
@@ -134,7 +133,6 @@ public class RelatorioResource {
     @GET
     @Path("/nasa-eonet")
     @Produces(MediaType.APPLICATION_JSON)
-    // Executa a operação relacionada a consultarNasaEonet.
     public Response consultarNasaEonet() {
         try {
             HttpURLConnection conn = (HttpURLConnection) URI.create(NASA_EONET_URL).toURL().openConnection();

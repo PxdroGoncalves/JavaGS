@@ -10,7 +10,6 @@ import java.util.List;
 
 public class RegiaoDAO {
 
-    // Valida os dados recebidos e realiza o cadastro do registro.
     public void cadastrar(Regiao regiao) throws ExcecoesConexao {
         String sql = "INSERT INTO REGIAO (nome, estado, pais) VALUES (?, ?, ?)";
         try (Connection con = ConexaoFactory.getConnection();
@@ -27,7 +26,6 @@ public class RegiaoDAO {
         }
     }
 
-    // Busca e retorna os registros solicitados.
     public List<Regiao> listar() throws ExcecoesConexao {
         String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO ORDER BY estado, nome";
         List<Regiao> lista = new ArrayList<>();
@@ -48,7 +46,6 @@ public class RegiaoDAO {
         return lista;
     }
 
-    // Consulta informações com base nos parâmetros recebidos.
     public Regiao buscarPorId(int id) throws ExcecoesConexao {
         String sql = "SELECT id_regiao, nome, estado, pais FROM REGIAO WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -63,7 +60,6 @@ public class RegiaoDAO {
         return null;
     }
 
-    // Atualiza as informações do registro existente.
     public void atualizar(Regiao regiao) throws ExcecoesConexao {
         String sql = "UPDATE REGIAO SET nome = ?, estado = ?, pais = ? WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -78,7 +74,6 @@ public class RegiaoDAO {
         }
     }
 
-    // Remove o registro correspondente da base de dados.
     public void deletar(int id) throws ExcecoesConexao {
         String sql = "DELETE FROM REGIAO WHERE id_regiao = ?";
         try (Connection con = ConexaoFactory.getConnection();

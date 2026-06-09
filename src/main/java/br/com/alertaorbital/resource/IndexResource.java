@@ -15,7 +15,6 @@ public class IndexResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    // Executa a operação relacionada a index.
     public Response index() {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("mensagem", "API AlertaOrbital rodando com sucesso");

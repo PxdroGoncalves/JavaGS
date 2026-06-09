@@ -11,7 +11,6 @@ import java.util.List;
 
 public class OcorrenciaSateliteDAO {
 
-    // Executa a operação relacionada a vincular.
     public void vincular(OcorrenciaSatelite os) throws ExcecoesConexao {
         String sql = "INSERT INTO OCORRENCIA_SATELITE (id_ocorrencia, id_satelite, data_deteccao) VALUES (?, ?, TO_DATE(?,'YYYY-MM-DD'))";
         try (Connection con = ConexaoFactory.getConnection();
@@ -25,7 +24,6 @@ public class OcorrenciaSateliteDAO {
         }
     }
 
-    // Executa a operação relacionada a desvincular.
     public void desvincular(int idOcorrencia, int idSatelite) throws ExcecoesConexao {
         String sql = "DELETE FROM OCORRENCIA_SATELITE WHERE id_ocorrencia = ? AND id_satelite = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -38,7 +36,6 @@ public class OcorrenciaSateliteDAO {
         }
     }
 
-    // Executa a operação relacionada a vinculoExiste.
     public boolean vinculoExiste(int idOcorrencia, int idSatelite) throws ExcecoesConexao {
         String sql = "SELECT COUNT(*) FROM OCORRENCIA_SATELITE WHERE id_ocorrencia = ? AND id_satelite = ?";
         try (Connection con = ConexaoFactory.getConnection();
@@ -54,7 +51,6 @@ public class OcorrenciaSateliteDAO {
         }
     }
 
-    // Busca e retorna os registros solicitados.
     public List<Satelite> listarSatelitesPorOcorrencia(int idOcorrencia) throws ExcecoesConexao {
         String sql = "SELECT s.id_satelite, s.nome, s.agencia, s.operacional FROM SATELITE s INNER JOIN OCORRENCIA_SATELITE os ON os.id_satelite = s.id_satelite WHERE os.id_ocorrencia = ? ORDER BY s.nome";
         List<Satelite> lista = new ArrayList<>();
@@ -77,7 +73,6 @@ public class OcorrenciaSateliteDAO {
         return lista;
     }
 
-    // Busca e retorna os registros solicitados.
     public List<OcorrenciaSatelite> listar() throws ExcecoesConexao {
         String sql = "SELECT os.id_ocorrencia, os.id_satelite, TO_CHAR(os.data_deteccao,'YYYY-MM-DD') AS data_deteccao, s.nome AS nome_satelite, s.agencia FROM OCORRENCIA_SATELITE os INNER JOIN SATELITE s ON s.id_satelite = os.id_satelite ORDER BY os.data_deteccao DESC";
         List<OcorrenciaSatelite> lista = new ArrayList<>();
