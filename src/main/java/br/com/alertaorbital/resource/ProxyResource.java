@@ -18,37 +18,24 @@ public class ProxyResource {
     @GET
     @Path("/gdacs")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response gdacs() {
+    public Response gdacs() throws Exception {
+        LocalDate hoje = LocalDate.now();
+        LocalDate ha365dias = hoje.minusDays(365);
 
-        try {
-            LocalDate hoje = LocalDate.now();
-            LocalDate ha365dias = hoje.minusDays(365);
+        String url = "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH"
+                + "?fromDate=" + ha365dias
+                + "&toDate=" + hoje
+                + "&alertlevel=Green,Orange,Red"
+                + "&country=Brazil,Argentina,Chile,Peru,Colombia,Bolivia,Ecuador,Paraguay,Uruguay,Venezuela,Suriname,Guyana"
+                + "&pagesize=100";
 
-            String url =
-                    "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH"
-                            + "?fromDate=" + ha365dias
-                            + "&toDate=" + hoje
-                            + "&alertlevel=Green,Orange,Red"
-                            + "&pagesize=100";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
 
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
-
-            String body = client.send(
-                    request,
-                    HttpResponse.BodyHandlers.ofString()
-            ).body();
-
-            return Response.ok(body).build();
-
-        } catch (Exception e) {
-            return Response.serverError()
-                    .entity("{\"erro\":\"" + e.getMessage() + "\"}")
-                    .build();
-        }
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return Response.ok(response.body()).build();
     }
 }
