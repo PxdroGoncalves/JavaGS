@@ -4,20 +4,11 @@ import br.com.alertaorbital.conexoes.ConexaoFactory;
 import br.com.alertaorbital.entities.Usuario;
 import br.com.alertaorbital.excecoes.ExcecoesConexao;
 
-import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class UsuarioDAO {
-
-    // Gera salt aleatório de 16 bytes em Base64 (22 chars) — cabe em VARCHAR2(64)
-    private static String gerarSalt() {
-        byte[] bytes = new byte[16];
-        new SecureRandom().nextBytes(bytes);
-        return Base64.getEncoder().encodeToString(bytes);
-    }
 
     private Usuario mapRow(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();

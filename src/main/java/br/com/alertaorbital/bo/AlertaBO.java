@@ -52,6 +52,8 @@ public class AlertaBO {
             throw new ExcecoesConexao("id_ocorrencia é obrigatorio");
         if (alerta.getIdUsuario() <= 0)
             throw new ExcecoesConexao("id_usuario é obrigatorio");
+        if (alerta.getDataEmissao() == null || alerta.getDataEmissao().isBlank())
+            alerta.setDataEmissao(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         AlertaDAO dao = new AlertaDAO();
         dao.atualizar(alerta);

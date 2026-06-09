@@ -48,6 +48,8 @@ public class OcorrenciaBO {
     }
 
     public List<Ocorrencia> listarPorStatus(String status) throws ExcecoesConexao {
+        if (status == null || status.isBlank())
+            throw new ExcecoesConexao("status e obrigatorio");
         if (!STATUS_VALIDOS.contains(status.toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
         OcorrenciaDAO dao = new OcorrenciaDAO();
@@ -85,6 +87,8 @@ public class OcorrenciaBO {
 
     // Regra de negocio: progressao ATIVO -> CONTROLADO -> RESOLVIDO sem retrocesso
     public Ocorrencia atualizarStatus(int id, String novoStatus) throws ExcecoesConexao {
+        if (novoStatus == null || novoStatus.isBlank())
+            throw new ExcecoesConexao("status e obrigatorio");
         if (!STATUS_VALIDOS.contains(novoStatus.toUpperCase()))
             throw new ExcecoesConexao("status invalido. Use: ATIVO, CONTROLADO ou RESOLVIDO");
 
@@ -93,7 +97,7 @@ public class OcorrenciaBO {
         if (atual == null)
             throw new ExcecoesConexao("Ocorrencia nao encontrada para o id: " + id);
 
-        String statusAtual = atual.getStatus();
+        String statusAtual = atual.getStatus() != null ? atual.getStatus().toUpperCase() : "";
         String statusNovo  = novoStatus.toUpperCase();
 
         if (statusAtual.equals("RESOLVIDO"))
