@@ -28,7 +28,7 @@ public class UsuarioResource {
     // =========================================================================
 
     @POST
-    @Path("/auth/cadastro")
+    @Path("/cadastro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response cadastrar(Usuario usuario) {
@@ -41,7 +41,7 @@ public class UsuarioResource {
     }
 
     @POST
-    @Path("/auth/login")
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest req) {
