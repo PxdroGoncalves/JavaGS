@@ -10,10 +10,19 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
-import java.util.Map;
 
 @Path("/ocorrencias")
 public class OcorrenciaResource {
+
+    // DTOs internos — resolvem o "additionalProp" no Swagger
+    public static class StatusRequest {
+        public String status;
+    }
+
+    public static class VincularSateliteRequest {
+        public int idSatelite;
+        public String dataDeteccao;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -137,9 +146,9 @@ public class OcorrenciaResource {
     @Path("/{id}/status")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response atualizarStatus(@PathParam("id") int id, Map<String, String> body) {
+    public Response atualizarStatus(@PathParam("id") int id, StatusRequest body) {
         try {
-            String novoStatus = body.get("status");
+            String novoStatus = body != null ? body.status : null;
             if (novoStatus == null || novoStatus.isBlank())
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("{\"erro\":\"Campo status é obrigatorio\"}").build();
@@ -158,24 +167,13 @@ public class OcorrenciaResource {
     @Path("/{id}/satelites")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response vincularSatelite(@PathParam("id") int id, Map<String, Object> body) {
+    public Response vincularSatelite(@PathParam("id") int id, VincularSateliteRequest body) {
         try {
-            Object idSateliteObj = body.get("idSatelite");
-            if (idSateliteObj == null)
+            if (body == null || body.idSatelite <= 0)
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("{\"erro\":\"Campo idSatelite é obrigatorio\"}").build();
-            // FIX: Jackson desserializa números como Integer, não String
-            int idSatelite;
-            try {
-                idSatelite = Integer.parseInt(idSateliteObj.toString());
-            } catch (NumberFormatException ex) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("{\"erro\":\"idSatelite deve ser um numero inteiro\"}").build();
-            }
-            Object dataDeteccaoObj = body.get("dataDeteccao");
-            String dataDeteccao = dataDeteccaoObj != null ? dataDeteccaoObj.toString() : null;
             OcorrenciaBO bo = new OcorrenciaBO();
-            OcorrenciaSatelite os = bo.vincularSatelite(id, idSatelite, dataDeteccao);
+            OcorrenciaSatelite os = bo.vincularSatelite(id, body.idSatelite, body.dataDeteccao);
             return Response.status(Response.Status.CREATED).entity(os).build();
         } catch (ExcecoesConexao e) {
             return Response.status(Response.Status.BAD_REQUEST)
